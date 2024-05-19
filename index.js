@@ -14,6 +14,9 @@ const connectApp = async () => {
 	app.use(corsConnect.corsConnect());
 	//Routes
 	app.use("/user", userRouter);
+	app.use("/ping", (req, res) => {
+	  res.send("Pong");
+	});
 	app.use("/api",tokenRouter,problemRouter,editorialRouter,testCaseRouter,problemSetterRouter);
 
 	app.use(errorMiddleware);
