@@ -15,7 +15,7 @@ const authAdmin = async (req, res, next) => {
 
         const decoded = jwt.verify(token, config.ACCESS_TOKEN_PRIVATE_KEY);
         const user = await User.findOne({ _id: decoded._id });
-        if (user && decoded.userRole==="Admin") {
+        if (user && decoded.userRole===3) {
           req.user = user;
           next();
         } else {

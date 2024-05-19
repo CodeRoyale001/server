@@ -14,8 +14,9 @@ const authProblemSetter = async (req, res, next) => {
         token = req.headers.authorization.split(" ")[1];
         const decoded = jwt.verify(token, config.ACCESS_TOKEN_PRIVATE_KEY);
         // console.log(decoded);
+        //Admin == 3, ProblemSetter == 2, User==0 
         const user = await User.findOne({ _id: decoded._id });
-        if (user && (user.userRole==="problemSetter" || user.userRole==="Admin")) {
+        if (user && (user.userRole===2 || user.userRole===3)) {
           req.user = user;
           next();
         } else {
