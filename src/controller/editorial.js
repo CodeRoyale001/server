@@ -42,7 +42,8 @@ const getEditorial = async ({ id }) => {
 		return result;
 
 	} catch (error) {
-		console.log(error);
+		throw error;
+		// console.log(error);
 	}
 };
 

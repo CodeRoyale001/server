@@ -15,7 +15,7 @@ const getUserByEmail = async({
     const user = await User.findOne({userEmail : userEmail})
     if(user) return user
   } catch (error) {
-    console.log(error);
+    throw error;
   }
 }
 
@@ -40,7 +40,7 @@ const loginUser = async ({
     const {accessToken , refreshToken} = await generateToken(user);
       return {accessToken,refreshToken};
   } catch (error) {
-    console.log(error);
+    throw error;
   }
 }
 
@@ -116,7 +116,6 @@ const updateUser = async ({ id,
     return user;
 
   } catch (error) {
-    // console.log(error);
     throw error;
   }
   
@@ -160,13 +159,10 @@ const getUserRole = async({ token }) => {
         token,
         config.ACCESS_TOKEN_PRIVATE_KEY
       );
-      // console.log(decoded);
-
       return decoded.userRole; // change to user role 
     }
     else throw new Error("No token Found")
   } catch (error) {
-    // console.log(error);
     throw error;
   }
 }

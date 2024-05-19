@@ -59,10 +59,10 @@ const refreshAccessToken = async(refreshToken) => {
             expiresIn: '20m',
           });
 
-        return {accessToken};
+        return Promise.resolve({accessToken});
         
     } catch (error) {
-        console.log(error);
+        return Promise.reject(error);
     }
 }
 
