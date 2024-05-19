@@ -3,7 +3,7 @@ const {editorialController} = require("../controller");
 const {ErrorHandler} = require("../utils");
 const router = express.Router();
 
-router.post("/createEditorial" , async(req,res,next)=>{
+router.post("/createEditorial", async(req,res,next)=>{
 
     try {
 
@@ -15,7 +15,7 @@ router.post("/createEditorial" , async(req,res,next)=>{
     }
 })
 
-router.put("/updateEditorial/:id" , async(req,res,next)=>{
+router.put("/updateEditorial/:id", async(req,res,next)=>{
 
     try {
         const result = await editorialController.updateEditorial({id:req.params['id'], ...req.body});
