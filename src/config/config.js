@@ -8,5 +8,6 @@ module.exports = Object.freeze({
   JWT_SECRET: process.env.JWT_SECRET,
   SALT: process.env.SALT,
   REFRESH_TOKEN_EXPIRE_IN:process.env.REFRESH_TOKEN_EXPIRE_IN,
-  ACCESS_TOKEN_EXPIRE_IN:process.env.ACCESS_TOKEN_EXPIRE_IN
+  ACCESS_TOKEN_EXPIRE_IN:process.env.ACCESS_TOKEN_EXPIRE_IN,
+  FRONTEND_URI: process.env.FRONTEND_URI,
 });

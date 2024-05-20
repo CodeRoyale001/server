@@ -1,9 +1,8 @@
 const cors = require("cors");
-
+const config=require("../config/config");
 const allowedOrigins = [
   "http://localhost:3000",
-  process.env.FRONTEND_URI,
-  "https://serene-fortress-91389-77d1fb95872a.herokuapp.com"
+  config.FRONTEND_URI,
 ];
 
 
