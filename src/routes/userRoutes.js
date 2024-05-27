@@ -38,7 +38,7 @@ router.put("/updateUser",authUser, async(req,res,next)=>{
     }
 })
 
-router.delete("/deleteUser/",authUser, async(req,res,next)=>{
+router.delete("/deleteUser",authUser, async(req,res,next)=>{
 
     try {
         const result = await userController.deleteUser({id:req.user._id});
@@ -52,7 +52,8 @@ router.delete("/deleteUser/",authUser, async(req,res,next)=>{
 router.get("/getUser" ,authAdmin, async(req,res,next)=>{
 
     try {
-        const result = await userController.getUserData(req.query);
+        const accessToken = req.headers.authorization.split(" ")[1];
+        const result = await userController.getUserData(accessToken);
         res.json(result);
 
     } catch (error) {

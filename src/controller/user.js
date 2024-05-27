@@ -132,11 +132,12 @@ const deleteUser = async ({ id }) => {
 
 //Get User Data
 
-const getUserData = async ({ id }) => {
+const getUserData = async (accessToken) => {
   try {
-		if (id) {
-      
-			const result1 = await User.findOne({ _id: id });
+		if (accessToken) {
+      const decoded = jwt.verify(accessToken, config.ACCESS_TOKEN_PRIVATE_KEY);
+      const userId = decoded._id;
+      const result1 = await User.findOne({ _id: userId }, { userPassword: 0, _id: 0, __v: 0 });
 
 			if (!result1) {
 				throw new Error("User not found");
