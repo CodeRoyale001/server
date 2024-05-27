@@ -5,6 +5,8 @@ const allowedOrigins = [
   config.FRONTEND_URI,
 ];
 
+console.log(config.FRONTEND_URI);
+
 
 const corsConnect = () =>
   cors({
