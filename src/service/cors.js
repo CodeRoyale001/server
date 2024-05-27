@@ -2,11 +2,10 @@ const cors = require("cors");
 const config=require("../config/config");
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://oj-front-end.vercel.app/",
-  // config.FRONTEND_URI,
+  config.FRONTEND_URI,
+  // "https://oj-front-end.vercel.app",
 ];
 
-console.log(config.FRONTEND_URI);
 
 
 const corsConnect = () =>
