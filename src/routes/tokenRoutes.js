@@ -6,11 +6,11 @@ const {userTokenController} = require("../controller");
 
 const router = express.Router();
 
-router.post('/refresh-token', async (req, res, next) => {
+router.post('/getAccessToken/:refreshToken', async (req, res, next) => {
   try {
-    const { refreshToken } = req.body;
+    const { refreshToken } = req.params;
     const result = await userTokenController.refreshAccessToken(refreshToken);
-        res.json(result);
+    res.json(result);
   } catch (error) {
     next(new ErrorHandler(error));
   }
