@@ -49,7 +49,19 @@ router.delete("/deleteUser",authUser, async(req,res,next)=>{
     }
 })
 
-router.get("/getUser" ,authAdmin, async(req,res,next)=>{
+router.get("/getAllUsers", authAdmin, async(req,res,next)=>{
+
+    try {
+        const accessToken = req.headers.authorization.split(" ")[1];
+        const result = await userController.getAllUserData(accessToken);
+        res.json(result);
+
+    } catch (error) {
+        next(new ErrorHandler(error))
+    }
+})
+
+router.get("/getUser", authUser, async(req,res,next)=>{
 
     try {
         const accessToken = req.headers.authorization.split(" ")[1];
@@ -61,7 +73,7 @@ router.get("/getUser" ,authAdmin, async(req,res,next)=>{
     }
 })
 
-router.get("/getUserRole" , async(req,res,next)=>{
+router.get("/getUserRole",  async(req,res,next)=>{
 
     try {
         const result = await userController.getUserRole(req.query);
