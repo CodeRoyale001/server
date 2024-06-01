@@ -156,24 +156,34 @@ const getAllUserData = async (accessToken) => {
 	}
 };
 
-const getUserRole = async ({ token }) => {
-	try {
-		if (token) {
-			const decoded = jwt.verify(token, config.ACCESS_TOKEN_PRIVATE_KEY);
-			return decoded.userRole; // change to user role
-		} else throw new Error("No token Found");
-	} catch (error) {
-		throw error;
-	}
+const getUserRole = async({ token }) => {
+  try {
+    if(token)
+    {
+      const decoded = jwt.verify(
+        token,
+        config.ACCESS_TOKEN_PRIVATE_KEY
+      );
+      return decoded.userRole; // change to user role 
+    }
+    else throw new Error("No token Found")
+  } catch (error) {
+    throw error;
+  }
+}
+const getUserByUserName = async (userName) => {
+  try {
+    const user = await User.findOne({ userName }, { userPassword: 0, _id: 0, __v: 0 });
+    if (!user) {
+      const error = new Error("User Not Found");
+      error.status = 404; // Custom status code
+      throw error;
+    }
+    return user;
+  } catch (error) {
+    throw error;
+  }
 };
 
-module.exports = {
-	getUserData,
-	createUser,
-	updateUser,
-	deleteUser,
-	loginUser,
-	getUserByEmail,
-	getUserRole,
-  getAllUserData,
-};
+
+module.exports = { getUserData, createUser, updateUser, deleteUser, loginUser, getUserByEmail, getUserRole,getUserByUserName};

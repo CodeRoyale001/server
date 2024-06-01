@@ -72,6 +72,16 @@ router.get("/getUser", authUser, async(req,res,next)=>{
         next(new ErrorHandler(error))
     }
 })
+router.get("/getUser/:userName", async(req,res,next)=>{
+
+    try {
+        const result = await userController.getUserByUserName(req.params.userName);
+        res.json(result);
+
+    } catch (error) {
+        next(new ErrorHandler(error))
+    }
+})
 
 router.get("/getUserRole",  async(req,res,next)=>{
 
