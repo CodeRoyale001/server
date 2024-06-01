@@ -22,22 +22,23 @@ const loginUser = async ({ userEmail, userPassword }) => {
 		};
 		const user = await User.findOne(query);
 		if (!user) {
-			throw new Error(" Incorrect Email or User Not Found");
+			const error = new Error("Incorrect Email or User Not Found");
+			error.status = 404;
+			throw error;
 		}
-		const verifyPassword = await bcrypt.compare(
-			userPassword,
-			user.userPassword
-		);
+		const verifyPassword = await bcrypt.compare(userPassword, user.userPassword);
 		if (!verifyPassword) {
-			throw new Error("Incorrect Password");
+			const error = new Error("Incorrect Password");
+			error.status = 401;
+			throw error;
 		}
 		const { accessToken, refreshToken } = await generateToken(user);
-		return { accessToken, refreshToken };
+		return { userId: user._id, userName: user.userName, accessToken, refreshToken };
 	} catch (error) {
+		// Optionally, log the error or handle it in another way
 		throw error;
 	}
 };
-
 //Create User
 const createUser = async ({
 	userName,
