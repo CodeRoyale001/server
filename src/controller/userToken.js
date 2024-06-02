@@ -4,11 +4,13 @@ const {UserToken} = require("../models");
 
 const createUserToken = async ({
     userId,
+    userName,
     token
 }) => {
     const resultToken = await UserToken.create(
         {
             userId,
+            userName,
             token,
         }
     )
@@ -18,7 +20,7 @@ const createUserToken = async ({
 
 const generateToken = async(user) =>{
     try {
-        const payload = {_id:user._id , userRole:user.userRole};
+        const payload = {_id:user._id ,userName:user.userName, userRole:user.userRole};
         
         const accessToken = jwt.sign(
             payload,
@@ -59,7 +61,7 @@ const refreshAccessToken = async(refreshToken) => {
             expiresIn: '20m',
           });
 
-        return Promise.resolve({accessToken});
+        return Promise.resolve({userName:decodedToken.userName,accessToken});
         
     } catch (error) {
         return Promise.reject(error);
