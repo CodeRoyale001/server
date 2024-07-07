@@ -1,10 +1,10 @@
-const mongoose = require("mongoose");
 const { User } = require("../models");
 const config = require("../config/config");
 const bcrypt = require("bcrypt");
 const { generateToken } = require("./userToken");
 const jwt = require("jsonwebtoken");
 const error = require("../middleware/error");
+const {userDTO} = require("../DTO");
 
 const getUserByEmail = async ({ userEmail }) => {
 	try {
@@ -40,77 +40,56 @@ const loginUser = async ({ userEmail, userPassword }) => {
 	}
 };
 //Create User
-const createUser = async ({
-	userName,
-	firstName,
-	lastName,
-	userEmail,
-	userPhone,
-	userCountry,
-	userPassword,
-	userRole,
-	userInstitute,
-}) => {
-	try {
-		const salt = await bcrypt.genSalt(Number(config.SALT));
-		const hashPassword = await bcrypt.hash(userPassword, salt);
-		const user = await User.create({
-			userName,
-			firstName,
-			lastName,
-			userEmail,
-			userPhone,
-			userCountry,
-			userPassword: hashPassword,
-			userRole,
-			userInstitute,
-		});
+const createUser = async (userData) => {
+    try {
+        // Destructure properties from the DTO
+		const newUserDTO = new userDTO.UserDTO(userData);
+        // Generate salt and hash the password
+        const salt = await bcrypt.genSalt(Number(config.SALT));
+        const hashPassword = await bcrypt.hash(newUserDTO.userPassword, salt);
+		newUserDTO.userPassword = hashPassword;
+        // Create the user
+        const user = await User.create(newUserDTO);
 
-		return user;
-	} catch (error) {
-		throw error;
-	}
+        return user;
+    } catch (error) {
+        throw error;
+    }
 };
+
 
 //Update User by ID
 
-const updateUser = async ({
-	id,
-	userName,
-	firstName,
-	lastName,
-	userEmail,
-	userPhone,
-	userCountry,
-	userPassword,
-	userRole,
-	userInstitute,
-}) => {
-	try {
-		const user = await User.findOneAndUpdate(
-			{ _id: id },
-			{
-				userName,
-				firstName,
-				lastName,
-				userEmail,
-				userPhone,
-				userCountry,
-				userPassword,
-				userRole,
-				userInstitute,
-			},
-			{
-				new: true,
-				runValidators: true,
-				useFindAndModify: false,
-			}
-		);
-		return user;
-	} catch (error) {
-		throw error;
-	}
+const updateUser = async (userUpdateData) => {
+    try {
+        // Destructure properties from the DTO
+		const userUpdateDTO = new userDTO.UserUpdateDTO(userUpdateData);
+        // Prepare the update object
+
+        // If a new password is provided, hash it
+        if (userUpdateDTO.userPassword) {
+            const salt = await bcrypt.genSalt(Number(config.SALT));
+            const hashPassword = await bcrypt.hash(userUpdateDTOuserPassword, salt);
+            userUpdateDTO.userPassword = hashPassword;
+        }
+
+        // Find and update the user
+        const user = await User.findOneAndUpdate(
+            { _id: userUpdateDTO.id },
+            userUpdateDTO,
+            {
+                new: true,
+                runValidators: true,
+                useFindAndModify: false,
+            }
+        );
+
+        return user;
+    } catch (error) {
+        throw error;
+    }
 };
+
 
 //Delete User by ID
 

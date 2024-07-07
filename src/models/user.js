@@ -10,12 +10,12 @@ const userSchema = new Schema(
         },
         firstName:{
             type: String,
-            required: true,
+            required: false,
             
         },
         lastName:{
             type: String,
-            required: true,
+            required: false,
             
         },
         userEmail:{
@@ -26,8 +26,7 @@ const userSchema = new Schema(
         },
         userPhone:{
             type: Number,
-            required: true,
-            unique: true,
+            required: false,
         },
         userCountry:{
             type: String,
@@ -45,7 +44,23 @@ const userSchema = new Schema(
             required: false,
             default: 0,
         },
+        githubLink:{
+            type: String,
+            required: false,
+        },
+        linkedInLink:{
+            type: String,
+            required: false,
+        },
+        twitterLink:{
+            type: String,
+            required: false,
+        },
         userInstitute:{
+            type: String,
+            required: false,
+        },
+        userAvatar:{
             type: String,
             required: false,
         },

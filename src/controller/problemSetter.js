@@ -1,24 +1,14 @@
 const { ProblemSetter } = require("../models");
 const { updateUser } = require("./user");
+const {problemSetterDTO} = require('../DTO');
 
-const createProblemSetter = async ({
-	occupation,
-	codingLang,
-	experience,
-	reason,
-	userId,
-}) => {
+const createProblemSetter = async (ProblemSetterData) => {
+	const newProblemSetter = new problemSetterDTO.ProblemSetterDTO(ProblemSetterData);
 	try {
-		const result = await ProblemSetter.create({
-			occupation,
-			codingLang,
-			experience,
-			reason,
-			appliedBy: userId,
-		});
+		const result = await ProblemSetter.create(newProblemSetter);
 		if(result) 
 		{
-			const res = updateUser({id:userId, userRole:"AppliedProblemSetter" });
+			const res = updateUser({id:newProblemSetter.appliedBy, userRole:"AppliedProblemSetter" });
 		}
 		else throw new Error("Unable to update");
 

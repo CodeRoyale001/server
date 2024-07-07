@@ -1,23 +1,10 @@
-
 const { Problem } = require("../models");
+const {problemDTO} = require('../DTO');
 
-const createProblem = async ({
-	title,
-	content,
-	tags,
-	difficulty,
-	approved,
-	id,
-}) => {
+const createProblem = async (problemData) => {
+	const newProblem = new problemDTO.ProblemDTO(problemData);
 	try {
-		const result = await Problem.create({
-			title,
-			content,
-			createdBy: id,
-			tags,
-			difficulty,
-			approved,
-		});
+		const result = await Problem.create(newProblem);
 		return result;
 	} catch (error) {
 		console.log(error);
@@ -67,25 +54,11 @@ const deleteProblem = async({ id }) => {
     await result.remove();
 }
 
-const updateProblem = async({
-    id,
-    title,
-	content,
-	tags,
-	difficulty,
-	approved,
-	userEmail,
-}) => {
+const updateProblem = async(updateProblemData) => {
+	const newProblem=new problemDTO.ProblemUpdateDTO(updateProblemData);
     const result = Problem.findOneAndUpdate(
-        {_id:id},
-        {
-            title,
-	        content,
-	        tags,
-	        difficulty,
-	        approved,
-	        userEmail,
-        },
+        {_id:newProblem.id},
+        newProblem,
         {
             new: true,
             runValidators: true,

@@ -1,21 +1,10 @@
 const { TestCase } = require("../models");
+const { testCaseDTO } = require("../DTO");
 
-const createTestCase = async ({
-	testCase,
-	output,
-    userId,
-    problemId,
-	approved,
-}) => {
-	console.log(testCase);
+const createTestCase = async (testCaseData) => {
 	try {
-		const result = await TestCase.create({
-			testCase,
-			output,
-			createdBy: userId,
-			problemId,
-			approved,
-		});
+		const newTestCase=new testCaseDTO.TestCaseDTO(testCaseData);
+		const result = await TestCase.create(newTestCase);
 		return result;
 	} catch (error) {
 		throw error
@@ -60,22 +49,11 @@ const deleteTestCase = async({ id }) => {
     await result.remove();
 }
 
-const updateTestCase = async({
-    id,
-    content,
-    userId,
-    problemId,
-	approved,
-}) => {
+const updateTestCase = async(updateTestCaseData) => {
+	const newTestCase=new testCaseDTO.TestCaseUpdateDTO(updateTestCaseData);
     const result = TestCase.findOneAndUpdate(
-        {_id:id},
-        {
-            content,
-			output,
-            userId,
-            problemId,
-	        approved,
-        },
+        {_id:newTestCase.id},
+        newTestCase,
         {
             new: true,
             runValidators: true,

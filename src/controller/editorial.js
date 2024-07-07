@@ -1,19 +1,9 @@
-const config = require("../config/config");
 const { Editorial } = require("../models");
+const {editorialDTO} = require('../DTO');
 
-const createEditorial = async ({
-	content,
-    userId,
-    Id,
-	approved,
-}) => {
-
-	const result = await Editorial.create({
-        content,
-        createdBy: userId,
-        problemId: Id,
-        approved,
-	});
+const createEditorial = async (editorialData) => {
+	const newEditorial = new editorialDTO.EditorialDTO(editorialData);
+	const result = await Editorial.create(newEditorial);
 	return result;
 };
 
@@ -52,21 +42,11 @@ const deleteEditorial = async({ id }) => {
     await result.remove();
 }
 
-const updateEditorial = async({
-    id,
-    content,
-    userId,
-    problemId,
-	approved,
-}) => {
+const updateEditorial = async(editorialUpdateData) => {
+	const newEditorial=new editorialDTO.EditorialUpdateDTO(editorialUpdateData);
     const result = Editorial.findOneAndUpdate(
-        {_id:id},
-        {
-            content,
-            userId,
-            problemId,
-	        approved,
-        },
+        {_id:newEditorial.id},
+        newEditorial,
         {
             new: true,
             runValidators: true,
