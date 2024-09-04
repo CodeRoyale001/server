@@ -28,6 +28,36 @@ const approveProblem = async ({ problemId }) => {
 	else throw new Error("Incorrect Problem Id");
 };
 
+
+
+const getRandomProblem = async ({ difficulty }) => {
+	try {
+	  // Construct the query object based on whether difficulty is provided
+	  const query = difficulty 
+		? { $and: [{ difficulty: difficulty }, { approved: true }] }
+		: { approved: true };
+  
+	  // Get the total count of documents that match the query
+	  const count = await Problem.countDocuments(query);
+	  console.log(count);
+  
+	  // Generate a random number based on the document count
+	  const random = Math.floor(Math.random() * count);
+	  console.log(random);
+  
+	  // Fetch the problem at the random offset
+	  const result = await Problem.findOne(query).skip(random);
+  
+	  return result;
+	} catch (error) {
+	  console.log(error);
+	  throw error;
+	}
+  };
+  
+  
+
+
 const getProblem = async ({title}) => {
 	try {
 		if (title) {
@@ -69,5 +99,5 @@ const updateProblem = async(updateProblemData) => {
     return result;
 }
 
-module.exports = { createProblem, approveProblem, getProblem, deleteProblem, updateProblem};
+module.exports = { createProblem, approveProblem,getRandomProblem, getProblem, deleteProblem, updateProblem};
 
