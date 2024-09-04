@@ -39,11 +39,11 @@ const getRandomProblem = async ({ difficulty }) => {
   
 	  // Get the total count of documents that match the query
 	  const count = await Problem.countDocuments(query);
-	  console.log(count);
+	//   console.log(count);
   
 	  // Generate a random number based on the document count
 	  const random = Math.floor(Math.random() * count);
-	  console.log(random);
+	//   console.log(random);
   
 	  // Fetch the problem at the random offset
 	  const result = await Problem.findOne(query).skip(random);
