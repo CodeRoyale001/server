@@ -56,4 +56,13 @@ router.put("/approveProblem/:id",authAdmin,async(req,res,next)=>{
     }
 })
 
+router.get("/getRandomProblem", async(req,res,next)=>{
+    try{
+        const result=await problemController.getRandomProblem(req.query);
+        res.json(result);
+    }catch (error) {
+        next(new ErrorHandler(error))
+    }
+})
+
 module.exports = router; 
