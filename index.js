@@ -4,12 +4,18 @@ const bodyParser = require("body-parser");
 const {dbConnect,corsConnect} = require("./src/service");
 const {errorMiddleware} = require("./src/middleware");
 const {userRouter, tokenRouter, problemRouter, editorialRouter, testCaseRouter, problemSetterRouter}=require("./src/routes")
+const { expressMiddleware } = require("@apollo/server/express4");
+const startGqlServer = require("./src/graphql");
+
+
 // const {handleUncaughtException,handleUncaughtRejection}=require("./src/utils")
 const connectApp = async () => {
 	const app = express();
-	//middleware
+	
 	app.use(express.json());
 	app.use(bodyParser.urlencoded({ extended: true }));
+	app.use("/graphql",expressMiddleware(await startGqlServer()));
+	//middleware
 	//adding CORS
 	app.use(corsConnect.corsConnect());
 	//Routes
