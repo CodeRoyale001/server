@@ -1,6 +1,7 @@
 const cors = require("cors");
 const config=require("../config/config");
 const allowedOrigins = [
+  "http://localhost:5005",
   "http://localhost:3000",
   config.FRONTEND_URI,
   // "https://oj-front-end.vercel.app",
