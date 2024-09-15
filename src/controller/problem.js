@@ -28,8 +28,6 @@ const approveProblem = async ({ problemId }) => {
 	else throw new Error("Incorrect Problem Id");
 };
 
-
-
 const getRandomProblem = async ({ difficulty }) => {
 	try {
 	  // Construct the query object based on whether difficulty is provided
@@ -66,7 +64,7 @@ const getProblem = async ({title}) => {
 			if (!result1) {
 				throw new Error("Problem not found");
 			}
-			return result1;
+			return [result1];
 		} else{
 			// throw new Error("Invalid Page");
 			const allProblems = await Problem.find({approved:true});
