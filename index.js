@@ -6,7 +6,7 @@ const { errorMiddleware,auth } = require("./src/middleware");
 const { userRouter, tokenRouter, problemRouter, editorialRouter, testCaseRouter, problemSetterRouter } = require("./src/routes");
 const { expressMiddleware } = require("@apollo/server/express4");
 const startGqlServer = require("./src/graphql");
-
+const fileUpload = require("express-fileupload");
 const connectApp = async () => {
   const app = express();
 
@@ -33,7 +33,10 @@ const connectApp = async () => {
 	);
 	// Apply CORS middleware
 	app.use(corsConnect.corsConnect());
-
+  app.use(fileUpload({
+    useTempFiles: true,
+    // tempFileDir: './'
+  }));
   // Regular REST API routes
   app.use("/user", userRouter);
   app.use("/ping", (req, res) => {

@@ -94,6 +94,20 @@ router.get("/getUserRole",  async(req,res,next)=>{
     }
 })
 
+router.put("/uploadavatar",authUser, async (req, res, next) => {
+    try {
+      // Check if file is uploaded      
+      if (!req.files || !req.files.image) {
+        return res.status(400).json({ success: false, message: "No image uploaded" });
+      }
+  
+      const result = await userController.uploadAvatar({image:req.files.image,userId:req.user._id});
+      res.json({ success: true, url: result.url });
+    } catch (error) {
+      next(new ErrorHandler(error.message));
+    }
+  });
+  
 
 
 module.exports = router; 

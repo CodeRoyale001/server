@@ -5,7 +5,8 @@ const { generateToken } = require("./userToken");
 const jwt = require("jsonwebtoken");
 const error = require("../middleware/error");
 const {userDTO} = require("../DTO");
-
+const cloudinary = require("cloudinary").v2;
+const fs = require("fs");
 const getUserByEmail = async ({ userEmail }) => {
 	try {
 		const user = await User.findOne({ userEmail: userEmail });
@@ -165,5 +166,69 @@ const getUserByUserName = async (userName) => {
   }
 };
 
+const uploadAvatar = async ({ image, userId }) => {
+  try {
+    // Configure Cloudinary
+    cloudinary.config({
+      secure: true,
+      cloud_name: config.CLOUDINARY_NAME,
+      api_key: config.CLOUDINARY_API_KEY,
+      api_secret: config.CLOUDINARY_API_SECRET,
+    });
 
-module.exports = { getUserData, createUser, updateUser, deleteUser, loginUser, getUserByEmail, getUserRole,getUserByUserName};
+    // Fetch the current user to get the current avatar's public_id
+    const user = await User.findById(userId);
+    
+    if (user && user.userAvatar) {
+      // Extract the public_id from the user's avatar URL
+      const publicId = extractPublicId(user.userAvatar);
+      
+      if (publicId) {
+        // Delete the old image from Cloudinary
+        await cloudinary.uploader.destroy(publicId);
+      }
+    }
+
+    // Upload the new image to Cloudinary
+    const result = await cloudinary.uploader.upload(image.tempFilePath);
+
+    // Update the user's avatar URL in the database
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { userAvatar: result.url }, // Update the avatar URL
+      {
+        new: true,
+        runValidators: true,
+        useFindAndModify: false,
+      }
+    );
+
+    // Delete the temporary file after successful upload
+    fs.unlink(image.tempFilePath, (err) => {
+      if (err) {
+        console.error("Failed to delete temp file:", err);
+      } else {
+        console.log("Temp file deleted successfully");
+      }
+    });
+
+    // Return the URL of the new image and the updated user data
+    return { url: result.url, user: updatedUser };
+
+  } catch (error) {
+    // If there is an error, throw it
+    throw new Error("Image upload failed: " + error.message);
+  }
+};
+
+// Helper function to extract the public_id from a Cloudinary URL
+const extractPublicId = (url) => {
+  const parts = url.split('/');
+  const filename = parts.pop(); // Extract the filename (e.g., abc123.jpg)
+  const publicId = filename.split('.')[0]; // Remove the extension and get the public_id
+  return publicId;
+};
+
+
+
+module.exports = { getUserData, createUser, updateUser, deleteUser, loginUser, getUserByEmail, getUserRole,getUserByUserName,uploadAvatar};
