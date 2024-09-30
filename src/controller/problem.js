@@ -126,6 +126,7 @@ const getProblem = async ({ title, userId }) => {
 						title: 1,
 						tags: 1,
 						approved: 1,
+						difficulty:1,
 						status: {
 							$cond: {
 								if: { $eq: ["$solvedInfo.status", 0] },
