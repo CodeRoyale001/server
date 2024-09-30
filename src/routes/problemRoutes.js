@@ -1,5 +1,5 @@
 const express = require("express")
-const {problemController} = require("../controller");
+const {problemController, solvedController} = require("../controller");
 const {ErrorHandler} = require("../utils");
 const {authProblemSetter,authAdmin,authUser}=require("../middleware")
 const router = express.Router();
@@ -37,16 +37,31 @@ router.post("/createProblem" ,authProblemSetter, async(req,res,next)=>{
 //     }
 // })
 
-router.get("/getProblem",authUser, async(req,res,next)=>{
-
+router.get("/getProblem", authUser, async (req, res, next) => {
     try {
-        const result = await problemController.getProblem(req.query);
-        res.json(result);
+        const { title } = req.query; // Extract title directly from query params
+        const result = await problemController.getProblem({
+            title: title || null, // Pass title as null if not provided
+            userId: req.user.userName // Ensure userId is passed correctly
+        });
 
+        if (result.length === 0) {
+            // Return 404 if no problem is found
+            return res.status(404).json({
+                success: false,
+                message: "No problems found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: result
+        });
     } catch (error) {
-        next(new ErrorHandler(error))
+        next(new ErrorHandler(error.message || "Something went wrong", error.status || 500));
     }
-})
+});
+
 router.put("/approveProblem/:id",authAdmin,async(req,res,next)=>{
     try{
         const result=await problemController.approveProblem({problemId:req.params['id']});

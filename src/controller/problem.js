@@ -1,5 +1,10 @@
 const { Problem } = require("../models");
-const {problemDTO} = require('../DTO');
+const { problemDTO } = require('../DTO');
+const { default: mongoose } = require("mongoose");
+const e = require("express");
+
+const Solved = mongoose.connection.collection("solved")
+
 
 const createProblem = async (problemData) => {
 	const newProblem = new problemDTO.ProblemDTO(problemData);
@@ -30,72 +35,150 @@ const approveProblem = async ({ problemId }) => {
 
 const getRandomProblem = async ({ difficulty }) => {
 	try {
-	  // Construct the query object based on whether difficulty is provided
-	  const query = difficulty 
-		? { $and: [{ difficulty: difficulty }, { approved: true }] }
-		: { approved: true };
-  
-	  // Get the total count of documents that match the query
-	  const count = await Problem.countDocuments(query);
-	//   console.log(count);
-  
-	  // Generate a random number based on the document count
-	  const random = Math.floor(Math.random() * count);
-	//   console.log(random);
-  
-	  // Fetch the problem at the random offset
-	  const result = await Problem.findOne(query).skip(random);
-  
-	  return result;
-	} catch (error) {
-	  console.log(error);
-	  throw error;
-	}
-  };
-  
-  
+		// Construct the query object based on whether difficulty is provided
+		const query = difficulty
+			? { $and: [{ difficulty: difficulty }, { approved: true }] }
+			: { approved: true };
 
+		// Get the total count of documents that match the query
+		const count = await Problem.countDocuments(query);
+		//   console.log(count);
 
-const getProblem = async ({title}) => {
-	try {
-		if (title) {
-			const result1 = await Problem.findOne({$and: [{title: title},{ approved: true }]});
+		// Generate a random number based on the document count
+		const random = Math.floor(Math.random() * count);
+		//   console.log(random);
 
-			if (!result1) {
-				throw new Error("Problem not found");
-			}
-			return [result1];
-		} else{
-			// throw new Error("Invalid Page");
-			const allProblems = await Problem.find({approved:true});
-			return allProblems;
-		}
+		// Fetch the problem at the random offset
+		const result = await Problem.findOne(query).skip(random);
 
+		return result;
 	} catch (error) {
 		console.log(error);
 		throw error;
 	}
 };
 
-const deleteProblem = async({ id }) => {
-    const result = await Problem.findById({ _id: id })
-    await result.remove();
+
+const getProblem = async ({ title, userId }) => {
+	try {
+		if (title) {
+			// Find the problem with the given title and check if it's approved
+			const result1 = await Problem.findOne({ $and: [{ title: title }, { approved: true }] });
+
+			if (!result1) {
+				throw new Error("Problem not found");
+			}
+
+			// Now, perform a lookup to get the status from the 'solved' collection
+			const solvedInfo = await Solved.findOne({
+				$and: [
+					{ questionid: result1._id.toString() }, // Ensure questionid matches the problem ID
+					{ userid: userId } // Match with the current user
+				]
+			});
+			// Add the status field to the result
+			if (solvedInfo) {
+				if (solvedInfo.status == 0){
+					result1.status = "Solved";
+				}else if (solvedInfo.status == 1){
+					result1.status = "Attempted";
+				}
+			}else{
+				result1.status = "Unsolved";
+			}
+			return [result1];
+		} else {
+			// Aggregate problems and match with solved records if no title is provided
+			const allProblems = await Problem.aggregate([
+				{
+					$lookup: {
+						from: "solved",
+						let: { problemId: "$_id" },
+						pipeline: [
+							{
+								$match: {
+									$expr: {
+										$and: [
+											{ $eq: ["$questionid", { $toString: "$$problemId" }] },
+											{ $eq: ["$userid", userId] }
+										]
+									}
+								}
+							}
+						],
+						as: "solvedInfo"
+					}
+				},
+				{
+					$unwind: {
+						path: "$solvedInfo",
+						preserveNullAndEmptyArrays: true
+					}
+				},
+				{
+					$match: {
+						approved: true
+					}
+				},
+				{
+					$project: {
+						_id: 1,
+						title: 1,
+						tags: 1,
+						approved: 1,
+						status: {
+							$cond: {
+								if: { $eq: ["$solvedInfo.status", 0] },
+								then: "Solved",
+								else: {
+									$cond: {
+										if: { $eq: ["$solvedInfo.status", 0] },
+										then: "Solved",
+										else: {
+											$cond: {
+												if: { $eq: ["$solvedInfo.status", 1] },
+												then: "Attempted",
+												else: "Unsolved"
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			]);
+			return allProblems;
+		}
+	} catch (error) {
+		console.log(error);
+		throw error;
+	}
+};
+
+module.exports = { getProblem };
+
+
+
+const deleteProblem = async ({ id }) => {
+	const result = await Problem.findById({ _id: id })
+	await result.remove();
 }
 
-const updateProblem = async(updateProblemData) => {
-	const newProblem=new problemDTO.ProblemUpdateDTO(updateProblemData);
-    const result = Problem.findOneAndUpdate(
-        {_id:newProblem.id},
-        newProblem,
-        {
-            new: true,
-            runValidators: true,
-            useFindAndModify: false,
-        }
-    );
+const updateProblem = async (updateProblemData) => {
+	const newProblem = new problemDTO.ProblemUpdateDTO(updateProblemData);
+	const result = Problem.findOneAndUpdate(
+		{ _id: newProblem.id },
+		newProblem,
+		{
+			new: true,
+			runValidators: true,
+			useFindAndModify: false,
+		}
+	);
 
-    return result;
+	return result;
 }
 
-module.exports = { createProblem, approveProblem,getRandomProblem, getProblem, deleteProblem, updateProblem};
+module.exports = { createProblem, approveProblem, getRandomProblem, getProblem, deleteProblem, updateProblem };
 
