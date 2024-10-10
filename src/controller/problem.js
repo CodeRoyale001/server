@@ -1,21 +1,47 @@
 const { Problem } = require("../models");
-const { problemDTO } = require('../DTO');
+const { problemDTO,testCaseDTO } = require('../DTO');
 const { default: mongoose } = require("mongoose");
 const e = require("express");
+const { createBulkTestCases } = require("./testCase");
 
 const Solved = mongoose.connection.collection("solved")
 
 
 const createProblem = async (problemData) => {
-	const newProblem = new problemDTO.ProblemDTO(problemData);
-	try {
-		const result = await Problem.create(newProblem);
-		return result;
-	} catch (error) {
-		console.log(error);
-		throw error;
-	}
+    // Create a new problem using the provided problem data
+    const newProblem = new problemDTO.ProblemDTO(problemData.questionDetail);
+    newProblem.code = problemData.code; // Correctly assign the code to the new problem
+    newProblem.createdBy = problemData.createdBy;
+    // console.log(newProblem);
+
+    try {
+        // Save the new problem to the database
+        const result = await Problem.create(newProblem);
+
+
+        // Bulk insert the test cases, mapping `testcase.input` to `testCase.testcase`
+        const TestCases = problemData.testCases.map(testCase => {
+            const newTestCase = new testCaseDTO.TestCaseDTO({
+                testCase: testCase.input, // Map input to testCase
+                output: testCase.output,
+                createdBy: newProblem.createdBy,
+                problemId: result._id,
+                approved: true
+            });
+            return newTestCase; // Return the new test case object
+        });
+
+        // const testCases = await createBulkTestCases(TestCases);
+        // console.log(TestCases);
+
+        return { result, TestCases };
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
 };
+
+
 
 const approveProblem = async ({ problemId }) => {
 	const result = await Problem.findOneAndUpdate(
