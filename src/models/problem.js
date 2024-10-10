@@ -25,6 +25,9 @@ const problemSchema = new Schema(
             type:String,
             required:true,
         },
+        code:{
+            type:String
+        },
         approved:{
             type:Boolean,
             default:false,
