@@ -5,6 +5,7 @@ class ProblemDTO {
         createdBy,
         tags,
         difficulty,
+        code,
         approved,
     }) {
         this.title = title;
@@ -12,6 +13,7 @@ class ProblemDTO {
         this.createdBy = createdBy;
         this.tags = tags;
         this.difficulty = difficulty;
+        this.code=code;
         this.approved = approved;
     }
 }
@@ -23,6 +25,7 @@ class ProblemUpdateDTO {
         content,
         tags,
         difficulty,
+        code,
         approved,
     }) {
         this.id = id;
@@ -30,6 +33,7 @@ class ProblemUpdateDTO {
         this.content = content;
         this.tags = tags;
         this.difficulty = difficulty;
+        this.code=code;
         this.approved = approved;
     }
 }

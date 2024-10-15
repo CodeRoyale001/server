@@ -64,5 +64,17 @@ const updateTestCase = async(updateTestCaseData) => {
     return result;
 }
 
-module.exports = { createTestCase, approveTestCase, getTestCase, deleteTestCase, updateTestCase};
+const createBulkTestCases = async (TestCases) => {
+    try {
+        // Insert multiple test cases into the database
+		console.log(TestCases);
+        const result = await TestCase.insertMany(TestCases);
+        console.log("Bulk insert successful:", result);
+        return result;
+    } catch (error) {
+        console.error("Bulk insert failed:", error);
+        throw error;
+    }
+};
+module.exports = { createTestCase, approveTestCase, getTestCase, deleteTestCase, updateTestCase, createBulkTestCases };
 

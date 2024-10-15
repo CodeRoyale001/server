@@ -7,7 +7,7 @@ const router = express.Router();
 router.post("/createProblem" ,authProblemSetter, async(req,res,next)=>{
 
     try {
-        const result = await problemController.createProblem({id:req.user._id,...req.body});
+        const result = await problemController.createProblem({createdBy:req.user.userName,...req.body});
         res.json(result);
 
     } catch (error) {
