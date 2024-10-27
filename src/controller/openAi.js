@@ -3,11 +3,6 @@ const { Logger } = require('../utils');
 const { getProblem } = require('./problem');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-// Log the API key to verify it's being read correctly
-Logger.info(`Loaded API Key: ${config.OPENAI_API_KEY}`);
-
-// In-memory store for conversation context (for production, use a database)
-let conversations = {};
 
 // Function to generate content using OpenAI API
 const generateEditorial = async ({ questionTitle, userId, userPrompt }) => {

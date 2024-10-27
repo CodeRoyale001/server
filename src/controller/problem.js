@@ -176,7 +176,7 @@ const deleteProblem = async ({ id }) => {
 };
 
 const updateProblem = async (updateProblemData) => {
-    Logger.info(`Updating problem with ID: ${updateProblemData.id}`);
+    Logger.info(`Updating problem .....`);
     const newProblem = new problemDTO.ProblemUpdateDTO(updateProblemData);
     const result = await Problem.findOneAndUpdate(
         { _id: newProblem.id },
@@ -188,7 +188,7 @@ const updateProblem = async (updateProblemData) => {
         }
     );
 
-    Logger.info(`Problem updated with ID: ${newProblem.id}`);
+    Logger.info(`Problem updated Successfully.`);
     return result;
 };
 
