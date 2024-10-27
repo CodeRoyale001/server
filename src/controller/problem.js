@@ -8,32 +8,41 @@ const Solved = mongoose.connection.collection("solved");
 
 const createProblem = async (problemData) => {
     Logger.info("Creating a new problem");
-    const newProblem = new problemDTO.ProblemDTO(problemData.questionDetail);
-    newProblem.code = problemData.code;
+    Logger.info("ProblemData is  :", JSON.stringify(problemData.questionDetail));
+
+    // Unmarshal the stringified JSON
+    const questionDetail = JSON.parse(problemData.questionDetail.trim());
+    const testCases = JSON.parse(problemData.testCases.trim());
+
+    const newProblem = new problemDTO.ProblemDTO(questionDetail);
+    newProblem.code = problemData.code; // Correctly assign the code to the new problem
     newProblem.createdBy = problemData.createdBy;
 
     try {
+        // Save the new problem to the database
         const result = await Problem.create(newProblem);
-        Logger.info(`Problem created with ID: ${result._id}`);
 
-        const TestCases = problemData.testCases.map(testCase => {
+        // Bulk insert the test cases
+        const TestCases = testCases.map(testCase => {
             const newTestCase = new testCaseDTO.TestCaseDTO({
-                testCase: testCase.input,
+                testCase: testCase.input, // Map input to testCase
                 output: testCase.output,
                 createdBy: newProblem.createdBy,
                 problemId: result._id,
                 approved: true
             });
-            return newTestCase;
+            return newTestCase; // Return the new test case object
         });
 
-        Logger.info(`Test cases created for problem ID: ${result._id}`);
-        return { result, TestCases };
+        const createdTestCases = await createBulkTestCases(TestCases);
+        Logger.info(`Problem created with ID: ${result._id}`);
+        return { result, TestCases: createdTestCases }; // Return the created test cases
     } catch (error) {
-        Logger.error("Error creating problem:", error);
+        console.log(error);
         throw error;
     }
 };
+
 
 const approveProblem = async ({ problemId }) => {
     Logger.info(`Approving problem with ID: ${problemId}`);
@@ -141,6 +150,7 @@ const getProblem = async ({ title, userId }) => {
                         title: 1,
                         tags: 1,
                         approved: 1,
+                        difficulty: 1,
                         status: {
                             $cond: {
                                 if: { $eq: ["$solvedInfo.status", 0] },

@@ -12,7 +12,7 @@ const testCaseSchema = new Schema(
             required:true,
         },
         createdBy:{
-            type: mongoose.Schema.Types.ObjectId,
+            type: String,
             required: true
         },
         problemId:{
