@@ -3,10 +3,11 @@ const config = require("./src/config/config");
 const bodyParser = require("body-parser");
 const { dbConnect, corsConnect } = require("./src/service");
 const { errorMiddleware,auth } = require("./src/middleware");
-const { userRouter, tokenRouter, problemRouter, editorialRouter, testCaseRouter, problemSetterRouter } = require("./src/routes");
+const { userRouter, tokenRouter, problemRouter, editorialRouter, testCaseRouter, problemSetterRouter, openAiRouter } = require("./src/routes");
 const { expressMiddleware } = require("@apollo/server/express4");
 const startGqlServer = require("./src/graphql");
 const fileUpload = require("express-fileupload");
+const { Logger } = require("./src/utils");
 const connectApp = async () => {
   const app = express();
 
@@ -42,7 +43,7 @@ const connectApp = async () => {
   app.use("/ping", (req, res) => {
     res.send("Pong");
   });
-  app.use("/api", tokenRouter, problemRouter, editorialRouter, testCaseRouter, problemSetterRouter);
+  app.use("/api", tokenRouter, problemRouter, editorialRouter, testCaseRouter, problemSetterRouter,openAiRouter);
 
   // Error handling middleware
   app.use(errorMiddleware);
@@ -50,14 +51,14 @@ const connectApp = async () => {
   // Database connection
   try {
     await dbConnect.dbConnect();
-    console.log("Connected to the database successfully");
+    Logger.info("Database connection successful");
   } catch (error) {
-    console.log("Database connection failed", error);
+    Logger.error("Database connection failed :", error);
   }
 
   // Start the server
   app.listen(config.PORT, () => {
-    console.log(`Server running on port ${config.PORT}`);
+    Logger.info(`Server started on http://localhost:${config.PORT}`);
   });
 
   // Optional: Handle Uncaught Exceptions

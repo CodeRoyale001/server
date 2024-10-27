@@ -4,6 +4,7 @@ const problemController = require("./problem")
 const editorialController = require("./editorial")
 const testCaseController =require("./testCase")
 const problemSetterController = require("./problemSetter")
+const openAiController = require("./openAi")
 
 module.exports={
     userController,
@@ -12,4 +13,5 @@ module.exports={
     editorialController,
     testCaseController,
     problemSetterController,
+    openAiController
 }
