@@ -4,6 +4,7 @@ const problemRouter=require("./problemRoutes");
 const testCaseRouter=require("./testCaseRoutes");
 const editorialRouter=require("./editorialRoutes");
 const problemSetterRouter = require("./problemSetterRoutes");
+const openAiRouter = require("./openAiRoutes");
 module.exports={
     userRouter,
     tokenRouter,
@@ -11,4 +12,5 @@ module.exports={
     testCaseRouter,
     editorialRouter,
     problemSetterRouter,
+    openAiRouter
 }
