@@ -65,14 +65,13 @@ const getRandomProblem = async ({ difficulty }) => {
         const count = await Problem.countDocuments(query);
         const random = Math.floor(Math.random() * count);
         const result = await Problem.findOne(query).skip(random);
-
         Logger.info(`Random problem fetched with ID: ${result._id}`);
         return result;
     } catch (error) {
         Logger.error("Error fetching random problem:", error);
         throw error;
     }
-};
+}
 
 const getProblem = async ({ title, userId }) => {
     Logger.info(`Fetching problem with title: ${title} for user: ${userId}`);
