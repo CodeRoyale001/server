@@ -42,7 +42,7 @@ const loginUser = async ({ userEmail, userPassword }) => {
         }
         const { accessToken, refreshToken } = await generateToken(user);
         Logger.info(`User logged in successfully: ${userEmail}`);
-        return { userId: user._id, userName: user.userName, accessToken, refreshToken };
+        return { userId: user._id, userName: user.userName, userAvatar:user.userAvatar,accessToken, refreshToken };
     } catch (error) {
         Logger.error(`Error logging in user: ${error.message}`);
         throw error;
