@@ -17,6 +17,7 @@ const createProblem = async (problemData) => {
     const newProblem = new problemDTO.ProblemDTO(questionDetail);
     newProblem.code = problemData.code; // Correctly assign the code to the new problem
     newProblem.createdBy = problemData.createdBy;
+    newProblem.title = problemData.title.toLowerCase();
 
     try {
         // Save the new problem to the database
@@ -25,7 +26,7 @@ const createProblem = async (problemData) => {
         // Bulk insert the test cases
         const TestCases = testCases.map(testCase => {
             const newTestCase = new testCaseDTO.TestCaseDTO({
-                testCase: testCase.input, // Map input to testCase
+                input: testCase.input, // Map input to testCase
                 output: testCase.output,
                 createdBy: newProblem.createdBy,
                 problemId: result._id,
@@ -42,7 +43,6 @@ const createProblem = async (problemData) => {
         throw error;
     }
 };
-
 
 const approveProblem = async ({ problemId }) => {
     Logger.info(`Approving problem with ID: ${problemId}`);

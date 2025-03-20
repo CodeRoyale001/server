@@ -1,12 +1,12 @@
 class TestCaseDTO {
     constructor({
-        testCase,
+        input,
         output,
         createdBy,
         problemId,
         approved,
     }) {
-        this.testCase = testCase;
+        this.input = input;
         this.output = output;
         this.createdBy = createdBy;
         this.problemId = problemId;
@@ -17,12 +17,12 @@ class TestCaseDTO {
 class TestCaseUpdateDTO {
     constructor({
         id,
-        testCase,
+        input,
         output,
         approved,
     }) {
         this.id = id;
-        this.testCase = testCase;
+        this.input = input;
         this.output = output;
         this.approved = approved;
     }

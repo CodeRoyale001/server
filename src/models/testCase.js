@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const testCaseSchema = new Schema(
     {
-        testCase:{
+        input:{
             type:String,
             required:true,
         },
